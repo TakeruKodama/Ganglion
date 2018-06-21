@@ -24,16 +24,19 @@ function setup() {
 
   let count = 0
 
-  for(let i = 0; i < r.sells.length; i+=6) {
+  let interval = 6;
+  for(let i = 0; i < r.sells.length; i+=interval) {
     let inputValue;
 
     if(count % 2) inputValue = 0;
     else inputValue = 0.05;
 
-    r.inputToSell(i, i+5, inputValue);
+    r.inputToSell(i, i+interval-1, inputValue);
 
     count++;
   }
+
+  // r.inputToSell(12, 18, 0.05);
 
   I = r.sells[13].output();
 
@@ -41,7 +44,7 @@ function setup() {
 
   x = width / 2;
 
-  let output = r.emit(1000, 0.2);
+  let output = r.emit(1000, 0.24);
   let emittionCount = countEmittion(output);
   console.log(emittionCount);
 }

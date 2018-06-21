@@ -108,6 +108,12 @@ class Receptive {
     }
   }
 
+  /**
+  *
+  * culculate I_ext
+  *
+  * @return {Number}
+  */
   iext() {
     let sum = 0;
     for(let s of this.sells) {
