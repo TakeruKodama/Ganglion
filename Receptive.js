@@ -135,6 +135,17 @@ class Receptive {
   */
   emit(duration, noiseRange) {
     let output = [];
+    let noises = [];
+
+    for(let i = 1; i < duration; i++) {
+
+      if(noiseRange === 0) {
+        noises.push(0);
+      }
+      else {
+        noises.push(randomGaussian(0, noiseRange));  
+      }
+    }
 
     for(let sell of this.sells) {
       let v = [];
@@ -146,77 +157,71 @@ class Receptive {
       for(let i = 1; i < duration; i++) {
         let res;
 
-        res = runge(v[i - 1], w[i - 1], sell.output(), noiseRange * noise(1));
+        res = runge(v[i - 1], w[i - 1], sell.output(), noises[i]);
 
         v.push(res.mv);
         w.push(res.mw);
       }
       output.push(v);
     }
-    return output;
+
+    let emittions = this.countEmittion(output);
+    let bipolarOutput = this.bipolarOutput(emittions);
+
+    return {emittions: emittions, bipolarOutput: bipolarOutput};
   }
-}
 
-function dog(sige, sigi, x) {
-  let e = (1/Math.pow(sige, 2)) * Math.exp(-1*Math.pow(x, 2)/(2*Math.exp(sige, 2)));
-  let i = (1/Math.pow(sigi, 2)) * Math.exp(-1*Math.pow(x, 2)/(2*Math.exp(sigi, 2)));
+  /**
+  *
+  * count emittion
+  *
+  * @param {Array} vdata
+  *
+  * @return {Array}
+  *
+  */
+  countEmittion(vdata) {
+    let res = [];
 
-  return e - i;
-}
+    for(let data of vdata) {
 
-function runge(v, w, I, n) {
-  let kv = [];
-  let mv;
-  let kw = [];
-  let mw;
+      let counter = 0;
+      for(let i = 0; i < data.length; i++) {
+        if(Math.sign(data[i]) != Math.sign(data[i+1])) {
+          counter++;
+        }
+      }
+      counter / 2;
+      res.push(counter);
+    }
 
-  kv.push(h * mem(v, w, I, n));
-  kw.push(h * inact(v, w));
+    return res;
+  }
 
-  kv.push(h * mem(v + (1/2)*kv[0], w + (1/2)*kw[0], I, n));
-  kw.push(h * inact(v + (1/2)*kv[0], w + (1/2)*kw[0]));
+  /**
+  *
+  * bipolarOutput
+  *
+  * TODO: make for off subregion.
+  *
+  * @param {Array}  emittions
+  * @return {Number}
+  */
+  bipolarOutput(emittions) {
 
-  kv.push(h * mem(v + (1/2)*kv[1], w + (1/2)*kw[1], I, n));
-  kw.push(h * inact(v + (1/2)*kv[1], w + (1/2)*kw[1]));
+    const midPos = this.isWhereMid();
+    let sum = 0;
 
-  kv.push(h * mem(v + kv[2], w + kw[2], I, n));
-  kw.push(h * inact(v + kv[2], w + kw[2]));
+    for(let i = 0; i < emittions.length; i++) {
 
-  mv = v + (kv[0] + 2*kv[1] + 2*kv[2] + kv[3]) / 6;
-  mw = w + (kw[0] + 2*kw[1] + 2*kw[2] + kw[3]) / 6;
-
-  return {mv, mw};
-}
-
-function mem(v, w, I, n) {
-  return c * (v - Math.pow(v, 3) / 3 - w + I + n);
-}
-
-function inact(v, w) {
-  return v + a - b * w;
-}
-
-/**
-*
-* count emittion
-*
-* @param {Array} vdata
-*
-* @return {Array}
-*
-*/
-function countEmittion(vdata) {
-  let res = [];
-
-  for(let data of vdata) {
-    let counter = 0;
-    for(let i = 0; i < data.length; i++) {
-      if(Math.sign(data[i]) != Math.sign(data[i+1])) {
-        counter++;
+      if(i < midPos[0] || i > midPos[1]) {
+        sum -= emittions[i];
+      }
+      else {
+        sum += emittions[i];
       }
     }
-    counter / 2;
-    res.push(counter);
+
+    return sum;
   }
-  return res;
 }

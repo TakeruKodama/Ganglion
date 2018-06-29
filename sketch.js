@@ -28,8 +28,8 @@ function setup() {
   for(let i = 0; i < r.sells.length; i+=interval) {
     let inputValue;
 
-    if(count % 2) inputValue = 0;
-    else inputValue = 0.05;
+    if(count % 2) inputValue = 1;
+    else inputValue = 1;
 
     r.inputToSell(i, i+interval-1, inputValue);
 
@@ -40,13 +40,13 @@ function setup() {
 
   I = r.sells[13].output();
 
-  console.log(r.isWhereMid())
+  console.log(r.isWhereMid());
 
   x = width / 2;
 
-  let output = r.emit(1000, 0.24);
-  let emittionCount = countEmittion(output);
-  console.log(emittionCount);
+  let output = r.emit(1000, 0);
+
+  console.log(output);
 }
 
 function draw() {
