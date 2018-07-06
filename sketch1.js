@@ -25,7 +25,7 @@ function setup() {
     g[i].setWeights();
   }
 
-  noises = getNoise(duration, 0.05);
+  noises = getNoise(duration, 0.1);
 
   for(let i = 0; i < inputRange; i++) {
 
