@@ -5,7 +5,7 @@ class Ganglion {
       this.weight = this.setWeights();
       this.ie = 0;
       this.e = 0;
-      // true: 
+      // true:
       this.mode = mode;
    }
 
